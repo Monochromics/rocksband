@@ -64,20 +64,24 @@ All runtime settings are stored in `rocksband.conf`:
 [server]
 host = 127.0.0.1
 port = 5050
+serve_gui = true
 
 [podman]
 image_prefix = localhost
 image_tag = 1.0
 ```
 
-| Key              | Description                                              | Default     |
-|------------------|----------------------------------------------------------|-------------|
-| `server.host`    | IP address the listener binds to                         | `127.0.0.1` |
-| `server.port`    | Port the listener runs on                                | `5050`      |
-| `podman.image_prefix` | Registry prefix used when matching and launching images | `localhost` |
-| `podman.image_tag`    | Tag used when matching and launching images             | `1.0`       |
+| Key                   | Description                                              | Default     |
+|-----------------------|----------------------------------------------------------|-------------|
+| `server.host`         | IP address the listener binds to                         | `127.0.0.1` |
+| `server.port`         | Port the listener runs on                                | `5050`      |
+| `server.serve_gui`    | Serve the browser drum pad UI at `/`                     | `true`      |
+| `podman.image_prefix` | Registry prefix used when matching and launching images  | `localhost` |
+| `podman.image_tag`    | Tag used when matching and launching images              | `1.0`       |
 
 If the file is missing, all values fall back to their defaults.
+
+Set `serve_gui = false` to run the service as a headless API. In this mode the `/instruments` and `/play/{instrument}` endpoints remain available, but the `/` route is not registered. This is useful when the service is driven entirely by external clients such as a Stream Deck, MIDI controller, or custom automation.
 
 ## Running the Listener
 

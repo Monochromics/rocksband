@@ -16,6 +16,7 @@ config.read(CONFIG_PATH)
 
 SERVER_HOST = config.get("server", "host", fallback="127.0.0.1")
 SERVER_PORT = config.getint("server", "port", fallback=5050)
+SERVE_GUI = config.getboolean("server", "serve_gui", fallback=True)
 IMAGE_PREFIX = config.get("podman", "image_prefix", fallback="localhost")
 IMAGE_TAG = config.get("podman", "image_tag", fallback="1.0")
 
@@ -23,13 +24,14 @@ BUILD_KIT_DIR = pathlib.Path(__file__).parent / "build-kit"
 
 app = FastAPI(title="RocksBand Listener")
 
-@app.get("/", response_class=HTMLResponse)
-async def read_index():
-    try:
-        with open("index.html", "r") as f:
-            return f.read()
-    except FileNotFoundError:
-        return "<h1>index.html not found!</h1>"
+if SERVE_GUI:
+    @app.get("/", response_class=HTMLResponse)
+    async def read_index():
+        try:
+            with open("index.html", "r") as f:
+                return f.read()
+        except FileNotFoundError:
+            return "<h1>index.html not found!</h1>"
 
 async def get_available_instruments():
     """Queries Podman for loaded images, filtered to only those with a matching build-kit directory."""
