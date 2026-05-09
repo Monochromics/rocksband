@@ -1,9 +1,9 @@
-name: drum-rock
+name: snare-1-rock
 base: bare
 build-base: ubuntu@24.04
 version: "1.0"
 summary: Plays a sound once when triggered and then exits
-description: A chiseled rock that uses mpg123 to play snare-1.mp3 once, and then exits
+description: A chiseled rock that plays snare-1.mp3
 license: Apache-2.0
 
 platforms:
@@ -17,14 +17,13 @@ parts:
     stage-packages:
       - base-files_base
       - libc6_libs
-  drum-rock:
+  snare-1-rock:
     plugin: nil
-    source: .
     stage-packages:
       - mpg123
     override-build: |
       craftctl default
-      # Create symlinks for usrmerge compatibility
+      # Create symlinks for usrmerge compatibility (fixes "no such file or directory" for dynamic linker)
       for l in $CRAFT_PART_INSTALL/usr/lib* $CRAFT_PART_INSTALL/usr/bin $CRAFT_PART_INSTALL/usr/sbin
       do
         if [ -e "$l" ]; then

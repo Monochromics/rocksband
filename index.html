@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RocksBand Drum Pad</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            font-family: 'Outfit', sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 4px 20px rgba(236, 72, 153, 0.3);
+        }
+
+        .pad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding: 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .pad {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1), 0 4px 6px rgba(0, 0, 0, 0.2);
+            user-select: none;
+            text-transform: capitalize;
+        }
+
+        .pad:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 10px 15px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .pad:active {
+            transform: scale(0.95);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+            border-color: #ec4899;
+            color: #ec4899;
+        }
+
+        .glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(236, 72, 153, 0.4) 0%, transparent 70%);
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .pad-container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>RocksBand</h1>
+    
+    <div class="pad-grid">
+        <!-- These match the rock names built by build_rocks.sh -->
+        <div class="pad-container">
+            <div class="glow"></div>
+            <div class="pad" data-instrument="snare-1">Snare 1</div>
+        </div>
+        <div class="pad-container">
+            <div class="glow"></div>
+            <div class="pad" data-instrument="kick">Kick</div>
+        </div>
+        <div class="pad-container">
+            <div class="glow"></div>
+            <div class="pad" data-instrument="hi-hat">Hi-Hat</div>
+        </div>
+        <div class="pad-container">
+            <div class="glow"></div>
+            <div class="pad" data-instrument="crash">Crash</div>
+        </div>
+        <div class="pad-container">
+            <div class="glow"></div>
+            <div class="pad" data-instrument="tom-1">Tom 1</div>
+        </div>
+        <div class="pad-container">
+            <div class="glow"></div>
+            <div class="pad" data-instrument="tom-2">Tom 2</div>
+        </div>
+    </div>
+
+    <script>
+        const pads = document.querySelectorAll('.pad');
+
+        pads.forEach(pad => {
+            // Support both click and touch for low latency
+            const triggerPlay = (e) => {
+                e.preventDefault(); // prevent double firing on touch devices
+                
+                const instrument = pad.getAttribute('data-instrument');
+                
+                // Visual feedback
+                pad.style.transform = 'scale(0.95)';
+                pad.style.color = '#ec4899';
+                pad.style.borderColor = '#ec4899';
+                
+                setTimeout(() => {
+                    pad.style.transform = '';
+                    pad.style.color = '';
+                    pad.style.borderColor = '';
+                }, 100);
+
+                // Fire the API request asynchronously
+                fetch(`/play/${instrument}`, { method: 'POST' })
+                    .catch(err => console.error(`Failed to play ${instrument}:`, err));
+            };
+
+            pad.addEventListener('mousedown', triggerPlay);
+            pad.addEventListener('touchstart', triggerPlay);
+        });
+    </script>
+</body>
+</html>
