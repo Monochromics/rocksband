@@ -7,6 +7,7 @@ A containerized sound board built on [Canonical Rocks](https://canonical-rockcra
 ```
 rocksband/
 ├── main.py                          # FastAPI listener service
+├── rocksband.conf                   # Server and Podman configuration
 ├── index.html                       # Browser-based drum pad UI
 ├── requirements.txt                 # Python dependencies
 └── build-kit/
@@ -55,6 +56,29 @@ Pack all instruments and import them into Podman:
 
 The script will skip any instrument whose `.rock` file is already newer than both the `.wav` source and the template.
 
+## Configuration
+
+All runtime settings are stored in `rocksband.conf`:
+
+```ini
+[server]
+host = 127.0.0.1
+port = 5050
+
+[podman]
+image_prefix = localhost
+image_tag = 1.0
+```
+
+| Key              | Description                                              | Default     |
+|------------------|----------------------------------------------------------|-------------|
+| `server.host`    | IP address the listener binds to                         | `127.0.0.1` |
+| `server.port`    | Port the listener runs on                                | `5050`      |
+| `podman.image_prefix` | Registry prefix used when matching and launching images | `localhost` |
+| `podman.image_tag`    | Tag used when matching and launching images             | `1.0`       |
+
+If the file is missing, all values fall back to their defaults.
+
 ## Running the Listener
 
 Set up a virtual environment and install dependencies:
@@ -65,7 +89,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Start the server:
+Start the server using the config values directly:
+
+```
+python main.py
+```
+
+Or override via uvicorn:
 
 ```
 uvicorn main:app --host 127.0.0.1 --port 5050
