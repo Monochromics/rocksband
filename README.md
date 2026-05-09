@@ -1,6 +1,6 @@
 # RocksBand
 
-A containerized drum machine built on [Canonical Rocks](https://canonical-rockcraft.readthedocs-hosted.com/en/latest/). Each drum sound is packaged as its own minimal OCI image using a chiseled `bare` base, then triggered on demand through a FastAPI service. Multiple containers can fire simultaneously, mixing audio through the host's PulseAudio socket.
+A containerized sound board built on [Canonical Rocks](https://canonical-rockcraft.readthedocs-hosted.com/en/latest/). Each instrument sound is packaged as its own minimal OCI image using a chiseled `bare` base, then triggered on demand through a FastAPI service. Multiple containers can fire simultaneously, mixing audio through the host's PulseAudio socket.
 
 ## Architecture
 
@@ -21,8 +21,8 @@ rocksband/
 
 Each instrument directory contains a single `.wav` file. The build script generates a `rockcraft.yaml` from the shared template, packs it into a `.rock` archive, and imports it into Podman as `localhost/<instrument>:1.0`.
 
-The rocks use a `bare` base with Chisel slices and `pulseaudio-utils` to keep the image as small as possible. The entrypoint calls `paplay` directly against the `.wav` file, bypassing Pebble entirely for minimal startup latency.
-
+The rocks use a `bare` base with Chisel slices and `pulseaudio-utils` to keep the image as small as possible. The entrypoint calls `paplay` directly against the `.wav` file, bypassing Pebble for minimal startup latency.
+  
 ## Prerequisites
 
 - Ubuntu 24.04 (or compatible)
