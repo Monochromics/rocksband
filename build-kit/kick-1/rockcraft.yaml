@@ -1,15 +1,15 @@
-name: snare-1-rock
+name: kick-1-rock
 base: bare
 build-base: ubuntu@24.04
 version: "1.0"
 summary: Plays a sound once when triggered and then exits
-description: A chiseled rock that plays snare-1.mp3
+description: A chiseled rock that plays kick-1.wav
 license: Apache-2.0
 
 platforms:
   amd64:
 
-entrypoint-command: /usr/bin/mpg123.bin -o pulse /snare-1.mp3
+entrypoint-command: /usr/bin/paplay /kick-1.wav
 
 parts:
   chiseled-base:
@@ -17,13 +17,13 @@ parts:
     stage-packages:
       - base-files_base
       - libc6_libs
-  snare-1-rock:
+  drum-rock:
     plugin: nil
     stage-packages:
-      - mpg123
+      - pulseaudio-utils
     override-build: |
       craftctl default
-      # Create symlinks for usrmerge compatibility (fixes "no such file or directory" for dynamic linker)
+      # Create symlinks for usrmerge compatibility
       for l in $CRAFT_PART_INSTALL/usr/lib* $CRAFT_PART_INSTALL/usr/bin $CRAFT_PART_INSTALL/usr/sbin
       do
         if [ -e "$l" ]; then
@@ -41,4 +41,4 @@ parts:
     source: .
     override-build: |
       mkdir -p $CRAFT_PART_INSTALL
-      cp snare-1.mp3 $CRAFT_PART_INSTALL/snare-1.mp3
+      cp kick-1.wav $CRAFT_PART_INSTALL/kick-1.wav

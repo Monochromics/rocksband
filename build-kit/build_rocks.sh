@@ -11,12 +11,12 @@ for dir in */ ; do
     # Strip the trailing slash
     dir_name="${dir%/}"
     
-    # Look for an mp3 file inside the directory
-    mp3_file=$(ls "$dir_name"/*.mp3 2>/dev/null | head -n 1)
+    # Look for an wav file inside the directory
+    wav_file=$(ls "$dir_name"/*.wav 2>/dev/null | head -n 1)
     
-    if [ -n "$mp3_file" ]; then
-        # Get just the filename (e.g. snare-1.mp3) instead of the path
-        file_basename=$(basename "$mp3_file")
+    if [ -n "$wav_file" ]; then
+        # Get just the filename (e.g. snare-1.wav) instead of the path
+        file_basename=$(basename "$wav_file")
         rock_name="${dir_name}-rock"
         
         echo "================================================="

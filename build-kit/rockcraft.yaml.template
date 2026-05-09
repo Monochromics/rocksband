@@ -9,7 +9,7 @@ license: Apache-2.0
 platforms:
   amd64:
 
-entrypoint-command: /usr/bin/mpg123.bin -o pulse /{{FILE_NAME}}
+entrypoint-command: /usr/bin/paplay /{{FILE_NAME}}
 
 parts:
   chiseled-base:
@@ -20,7 +20,7 @@ parts:
   drum-rock:
     plugin: nil
     stage-packages:
-      - mpg123
+      - pulseaudio-utils
     override-build: |
       craftctl default
       # Create symlinks for usrmerge compatibility
