@@ -28,6 +28,15 @@ for dir in */ ; do
         echo "✔ Generated $dir_name/rockcraft.yaml"
         
         if [ "$1" == "--pack" ]; then
+            # Find the generated rock file if it exists
+            existing_rock=$(ls "$dir_name"/*.rock 2>/dev/null | head -n 1)
+            
+            # If the rock exists and is newer than both the wav file and the template, skip it!
+            if [ -n "$existing_rock" ] && [ "$existing_rock" -nt "$wav_file" ] && [ "$existing_rock" -nt "rockcraft.yaml.template" ]; then
+                echo "⚡ Skipping $dir_name (already up to date)"
+                continue
+            fi
+            
             echo "Packing $rock_name..."
             (cd "$dir_name" && rockcraft pack)
             
