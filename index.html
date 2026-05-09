@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -94,67 +95,77 @@
         }
     </style>
 </head>
+
 <body>
 
     <h1>RocksBand</h1>
-    
-    <div class="pad-grid">
-        <!-- These match the rock names built by build_rocks.sh -->
-        <div class="pad-container">
-            <div class="glow"></div>
-            <div class="pad" data-instrument="snare-1">Snare 1</div>
-        </div>
-        <div class="pad-container">
-            <div class="glow"></div>
-            <div class="pad" data-instrument="kick">Kick</div>
-        </div>
-        <div class="pad-container">
-            <div class="glow"></div>
-            <div class="pad" data-instrument="hi-hat">Hi-Hat</div>
-        </div>
-        <div class="pad-container">
-            <div class="glow"></div>
-            <div class="pad" data-instrument="crash">Crash</div>
-        </div>
-        <div class="pad-container">
-            <div class="glow"></div>
-            <div class="pad" data-instrument="tom-1">Tom 1</div>
-        </div>
-        <div class="pad-container">
-            <div class="glow"></div>
-            <div class="pad" data-instrument="tom-2">Tom 2</div>
-        </div>
+
+    <div class="pad-grid" id="pad-grid">
+        <!-- Pads will be generated dynamically here -->
     </div>
 
     <script>
-        const pads = document.querySelectorAll('.pad');
+        document.addEventListener('DOMContentLoaded', async () => {
+            const padGrid = document.getElementById('pad-grid');
 
-        pads.forEach(pad => {
-            // Support both click and touch for low latency
-            const triggerPlay = (e) => {
-                e.preventDefault(); // prevent double firing on touch devices
-                
-                const instrument = pad.getAttribute('data-instrument');
-                
-                // Visual feedback
-                pad.style.transform = 'scale(0.95)';
-                pad.style.color = '#ec4899';
-                pad.style.borderColor = '#ec4899';
-                
-                setTimeout(() => {
-                    pad.style.transform = '';
-                    pad.style.color = '';
-                    pad.style.borderColor = '';
-                }, 100);
+            try {
+                // Fetch the list of packed and loaded instruments from the backend
+                const response = await fetch('/instruments');
+                const data = await response.json();
 
-                // Fire the API request asynchronously
-                fetch(`/play/${instrument}`, { method: 'POST' })
-                    .catch(err => console.error(`Failed to play ${instrument}:`, err));
-            };
+                if (data.instruments && data.instruments.length > 0) {
+                    data.instruments.forEach(instrument => {
+                        // Create the container
+                        const container = document.createElement('div');
+                        container.className = 'pad-container';
 
-            pad.addEventListener('mousedown', triggerPlay);
-            pad.addEventListener('touchstart', triggerPlay);
+                        // Create the glow effect
+                        const glow = document.createElement('div');
+                        glow.className = 'glow';
+
+                        // Create the pad
+                        const pad = document.createElement('div');
+                        pad.className = 'pad';
+                        pad.setAttribute('data-instrument', instrument);
+                        // Format name: "snare-1" -> "Snare 1"
+                        pad.textContent = instrument.replace('-', ' ');
+
+                        // Attach event listeners for playing
+                        const triggerPlay = (e) => {
+                            e.preventDefault(); // prevent double firing on touch devices
+
+                            // Visual feedback
+                            pad.style.transform = 'scale(0.95)';
+                            pad.style.color = '#ec4899';
+                            pad.style.borderColor = '#ec4899';
+
+                            setTimeout(() => {
+                                pad.style.transform = '';
+                                pad.style.color = '';
+                                pad.style.borderColor = '';
+                            }, 100);
+
+                            // Fire the API request asynchronously
+                            fetch(`/play/${instrument}`, { method: 'POST' })
+                                .catch(err => console.error(`Failed to play ${instrument}:`, err));
+                        };
+
+                        pad.addEventListener('mousedown', triggerPlay);
+                        pad.addEventListener('touchstart', triggerPlay);
+
+                        container.appendChild(glow);
+                        container.appendChild(pad);
+                        padGrid.appendChild(container);
+                    });
+                } else {
+                    padGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 1.2rem; color: #a855f7;">No instruments loaded. Use build_rocks.sh to build some!</p>';
+                }
+            } catch (error) {
+                console.error("Failed to fetch instruments:", error);
+                padGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #ec4899;">Error connecting to the backend.</p>';
+            }
         });
     </script>
 </body>
+
 </html>

@@ -1,2 +1,3 @@
 *.rock
 __pycache__
+build-kit/*/rockcraft.yaml
