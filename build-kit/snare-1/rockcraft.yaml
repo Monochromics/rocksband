@@ -1,0 +1,45 @@
+name: drum-rock
+base: bare
+build-base: ubuntu@24.04
+version: "1.0"
+summary: Plays a sound once when triggered and then exits
+description: A chiseled rock that uses mpg123 to play snare-1.mp3 once, and then exits
+license: Apache-2.0
+
+platforms:
+  amd64:
+
+entrypoint-command: /usr/bin/mpg123.bin -o pulse /snare-1.mp3
+
+parts:
+  chiseled-base:
+    plugin: nil
+    stage-packages:
+      - base-files_base
+      - libc6_libs
+  drum-rock:
+    plugin: nil
+    source: .
+    stage-packages:
+      - mpg123
+    override-build: |
+      craftctl default
+      # Create symlinks for usrmerge compatibility
+      for l in $CRAFT_PART_INSTALL/usr/lib* $CRAFT_PART_INSTALL/usr/bin $CRAFT_PART_INSTALL/usr/sbin
+      do
+        if [ -e "$l" ]; then
+          name=$(basename "$l")
+          ln -sf usr/$name $CRAFT_PART_INSTALL/$name
+        fi
+      done
+      
+      # ALSA requires the audio group to exist to set up IPC shared memory
+      mkdir -p $CRAFT_PART_INSTALL/etc
+      echo "root:x:0:" > $CRAFT_PART_INSTALL/etc/group
+      echo "audio:x:29:" >> $CRAFT_PART_INSTALL/etc/group
+  sound-file:
+    plugin: nil
+    source: .
+    override-build: |
+      mkdir -p $CRAFT_PART_INSTALL
+      cp snare-1.mp3 $CRAFT_PART_INSTALL/snare-1.mp3
