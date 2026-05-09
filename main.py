@@ -88,6 +88,7 @@ async def play_instrument(instrument: str, request: Request):
         "podman", "run", "--rm",
         "-v", f"/run/user/{uid}/pulse/native:/tmp/pulse-socket",
         "-e", "PULSE_SERVER=unix:/tmp/pulse-socket",
+        "--net=none","--no-hosts", "--init=false", "--read-only",
         image
     ]
 
